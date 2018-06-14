@@ -1,6 +1,6 @@
 {
     "URL_SERVER1": "tcp://localhost:8000", 
-    "URL_SERVER": "tcp://104.236.46.56:8000", 
-    "URL_BOT_SERVER": "104.236.46.56",
+    "URL_SERVER": "tcp://206.189.90.104:8000", 
+    "URL_BOT_SERVER": "206.189.90.104",
     "URL_BOT_SERVER1": "104.236.46.56"    
 }
