@@ -225,6 +225,43 @@ getBalance: function (opts, cb) {
   })
 },
 
+getDepth(opts, cb) {
+  this.getDepthOrderBook (opts, cb)
+},
+getDepthOrderBook: function (opts, cb) {
+  var args = {
+    market: joinProduct(opts.product_id),
+    type: 'both',
+    depth: 10
+  }
+  bittrex_public.getorderbook(args, function(data) {
+    if (typeof data !== 'object') {
+      console.log('Bittrex API (getorderbook) had an abnormal response, quitting.')
+      return cb(null, [])
+    }
+    if (!data.success) {
+      if (data.message && data.message.match(recoverableErrors)) {
+        return retry('getOrderBook', args, data.message)
+      }
+      console.log(data.message)
+      return cb(null, [])
+    }
+    if (typeof data.result.buy[0].Rate === 'undefined') {
+      console.log(data.message)
+      return cb(null, [])
+    }
+    cb(null, {
+      bids: [ [ data.result.buy[0].Rate, data.result.buy[0].Quantity ] ],
+      asks: [ [ data.result.sell[0].Rate, data.result.sell[0].Quantity ] ]
+     /*  buyOrderRate: data.result.buy[0].Rate,
+      buyOrderAmount: data.result.buy[0].Quantity,
+      sellOrderRate: data.result.sell[0].Rate,
+      sellOrderAmount: data.result.sell[0].Quantity */
+    })
+  })
+},
+
+
 getOrderBook: function (opts, cb) {
   var args = {
     market: joinProduct(opts.product_id),
@@ -248,10 +285,12 @@ getOrderBook: function (opts, cb) {
       return cb(null, [])
     }
     cb(null, {
-      buyOrderRate: data.result.buy[0].Rate,
+      bids: [ [ data.result.buy[0].Rate, data.result.buy[0].Quantity ] ],
+      asks: [ [ data.result.sell[0].Rate, data.result.sell[0].Quantity ] ]
+      /* buyOrderRate: data.result.buy[0].Rate,
       buyOrderAmount: data.result.buy[0].Quantity,
       sellOrderRate: data.result.sell[0].Rate,
-      sellOrderAmount: data.result.sell[0].Quantity
+      sellOrderAmount: data.result.sell[0].Quantity */
     })
   })
 },

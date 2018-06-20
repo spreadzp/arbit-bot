@@ -5,20 +5,52 @@ const path = require('path')
 module.exports = function container (conf) {
  
   //let recoverableErrors = new RegExp(/(ESOCKETTIMEOUT|ESOCKETTIMEDOUT|ETIMEDOUT|ECONNRESET|ECONNREFUSED|ENOTFOUND|Invalid nonce|Rate limit exceeded|URL request error)/)
- 
+  (async function () {
+    /* let kraken    = new ccxt.kraken ()
+    let bitfinex  = new ccxt.bitfinex ({ verbose: true })
+    let huobi     = new ccxt.huobi () */
+    console.log('conf.okex.key :', conf.okex.key);
+    let okex = new ccxt.okex ({
+        apiKey: conf.okex.key,
+        secret: conf.okex.secret,
+    })
+
+    console.log('okex :', okex.tokenBucket);
+
+   /*  console.log (kraken.id,    await kraken.loadMarkets ())
+    console.log (bitfinex.id,  await bitfinex.loadMarkets  ())
+    console.log (huobi.id,     await huobi.loadMarkets ()) */
+   //await okex.fetchOrderBook ('ETH/BTC').then(console.log);
+ console.log (okex.id )
+    console.log('++++++ ????????????????????:');
+ /*    console.log (bitfinex.id,  await bitfinex.fetchTicker ('BTC/USD'))
+    console.log (huobi.id,     await huobi.fetchTrades ('ETH/CNY')) */
+
+    //console.log (okcoinusd.id, await okcoinusd.fetchBalance ())
+
+    // sell 1 BTC/USD for market price, sell a bitcoin for dollars immediately
+    //console.log (okcoinusd.id, await okcoinusd.createMarketSellOrder ('BTC/USD', 1))
+
+    // buy 1 BTC/USD for $2500, you pay $2500 and receive ฿1 when the order is closed
+    //console.log (okcoinusd.id, await okcoinusd.createLimitBuyOrder ('BTC/USD', 1, 2500.00))
+
+    // pass/redefine custom exchange-specific order params: type, amount, price or whatever
+    // use a custom order type
+   // bitfinex.createLimitSellOrder ('BTC/USD', 1, 10, { 'type': 'trailing-stop' })
+}) ();
   var public_client, authed_client
 
   function publicClient () {
-    if (!public_client) public_client = new ccxt.hitbtc2({ 'apiKey': '', 'secret': '' })
+    if (!public_client) public_client = new ccxt.okex({ 'apiKey': '', 'secret': '' })
     return public_client
   }
 
   function authedClient() {
     if (!authed_client) {
-      if (!conf.hitbtc || !conf.hitbtc.key || !conf.hitbtc.key === 'YOUR-API-KEY') {
-        throw new Error('please configure your HitBTC credentials in ' + path.resolve(__dirname, 'conf.js'))
+      if (!conf.okex || !conf.okex.key || !conf.okex.key === 'YOUR-API-KEY') {
+        throw new Error('please configure your okex credentials in ' + path.resolve(__dirname, 'conf.js'))
       }
-      authed_client = new ccxt.hitbtc2({ 'apiKey': conf.hitbtc.key, 'secret': conf.hitbtc.secret })
+      authed_client = new ccxt.okex({ 'apiKey': conf.okex.key, 'secret': conf.okex.secret })
     }
     return authed_client
   }
@@ -30,7 +62,7 @@ module.exports = function container (conf) {
   function retry (method, args, err) {
     var timeout = 5000
     if (method == 'getOrder') {
-      // it can take up to 30 seconds for hitbtc to update with an order change.
+      // it can take up to 30 seconds for okex to update with an order change.
       if (err)    
         if (err.message.match(/not found/)) {
           timeout = 7000
@@ -93,12 +125,12 @@ module.exports = function container (conf) {
 
   var firstRun = true
   var exchange = {
-    name: 'hitbtc',
+    name: 'okex',
     historyScan: 'forward',
     makerFee:  -0.01,
     takerFee: 0.1,
 
-    getProducts: function () {
+    getProducts: function () { 
       if (firstRun)
       {
         firstRun = false
@@ -122,7 +154,7 @@ module.exports = function container (conf) {
                 time: trade.timestamp,
                 size: parseFloat(trade.amount),
                 price: parseFloat(trade.price),
-                selector: 'hitbtc.'+opts.product_id,
+                selector: 'okex.'+opts.product_id,
                 side: trade.side
               }
             })

@@ -14,9 +14,10 @@ module.exports = function bitfinex (conf) {
 
   var pair, public_client, ws_client
 
+  var ws_orders = []
   var ws_trades = []
   var ws_balance = []
-  var ws_orders = []
+  var ws_orderBook 
   var ws_ticker = []
   var ws_hb = []
   var ws_walletCalcDone
@@ -239,6 +240,7 @@ module.exports = function bitfinex (conf) {
         .on('oc', wsUpdateOrderCancel)
         .on('miu', marginSymbolWebsocket)
         .on('ps', assetPositionMargin)
+        //.on('orderbook', this.getOrderBook)
 
       // we need also more position updates here, but messages are completely undocumented
       // https://bitfinex.readme.io/v1/reference#ws-auth-position-updates
@@ -530,6 +532,13 @@ module.exports = function bitfinex (conf) {
 
     getQuote: function (opts, cb) {
       cb(null, { bid : String(ws_ticker.BID), ask : String(ws_ticker.ASK) })
+    }, 
+    getDepth: function (opts, cb) {  
+      cb(null, {
+        bids: [ [ ws_ticker.BID, 0 ] ],
+        asks: [ [ ws_ticker.ASK, 0 ] ]
+        })
+      //cb(null, { bid : String(ws_ticker.BID), ask : String(ws_ticker.ASK) })
     },
 
     cancelOrder: function (opts, cb) {

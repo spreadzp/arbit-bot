@@ -70,6 +70,16 @@ module.exports = function sim (conf, s) {
         }, latency)
       }
     },
+    getDepth: function (opts, cb) {
+      if (so.mode === 'paper') {
+        return real_exchange.getDepth(opts, cb)
+      }
+      else {
+        setTimeout(function() {
+          return cb(null, console.log)
+        }, latency)
+      }
+    },
 
     cancelOrder: function (opts, cb) {
       setTimeout(function() {

@@ -9,16 +9,16 @@ module.exports = function container (conf) {
   var public_client, authed_client
 
   function publicClient () {
-    if (!public_client) public_client = new ccxt.hitbtc2({ 'apiKey': '', 'secret': '' })
+    if (!public_client) public_client = new ccxt.bitmex({ 'apiKey': '', 'secret': '' })
     return public_client
   }
 
   function authedClient() {
     if (!authed_client) {
-      if (!conf.hitbtc || !conf.hitbtc.key || !conf.hitbtc.key === 'YOUR-API-KEY') {
-        throw new Error('please configure your HitBTC credentials in ' + path.resolve(__dirname, 'conf.js'))
+      if (!conf.bitmex || !conf.bitmex.key || !conf.bitmex.key === 'YOUR-API-KEY') {
+        throw new Error('please configure your bitmex credentials in ' + path.resolve(__dirname, 'conf.js'))
       }
-      authed_client = new ccxt.hitbtc2({ 'apiKey': conf.hitbtc.key, 'secret': conf.hitbtc.secret })
+      authed_client = new ccxt.bitmex({ 'apiKey': conf.bitmex.key, 'secret': conf.bitmex.secret })
     }
     return authed_client
   }
@@ -30,7 +30,7 @@ module.exports = function container (conf) {
   function retry (method, args, err) {
     var timeout = 5000
     if (method == 'getOrder') {
-      // it can take up to 30 seconds for hitbtc to update with an order change.
+      // it can take up to 30 seconds for bitmex to update with an order change.
       if (err)    
         if (err.message.match(/not found/)) {
           timeout = 7000
@@ -93,7 +93,7 @@ module.exports = function container (conf) {
 
   var firstRun = true
   var exchange = {
-    name: 'hitbtc',
+    name: 'bitmex',
     historyScan: 'forward',
     makerFee:  -0.01,
     takerFee: 0.1,
@@ -122,7 +122,7 @@ module.exports = function container (conf) {
                 time: trade.timestamp,
                 size: parseFloat(trade.amount),
                 price: parseFloat(trade.price),
-                selector: 'hitbtc.'+opts.product_id,
+                selector: 'bitmex.'+opts.product_id,
                 side: trade.side
               }
             })

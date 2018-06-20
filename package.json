@@ -19,6 +19,8 @@
     "trade2": "sh ./zenbot.sh trade bitfinex.eth-btc --paper",
     "trade3": "sh ./zenbot.sh trade poloniex.eth-btc --paper",
     "trade4": "sh ./zenbot.sh trade hitbtc.eth-btc --paper",
+    "trade5": "sh ./zenbot.sh trade bitmex.eth-btc --paper",
+    "trade6": "sh ./zenbot.sh trade okex.eth-btc --paper",
     "lint": "eslint **/*.js",
     "lint-fix": "eslint **/*.js --fix",
     "precommit": "lint-staged",

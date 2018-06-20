@@ -137,6 +137,7 @@ module.exports = function bittrex (conf) {
       var func_args = [].slice.call(arguments)
       var client = publicClient()
       client.fetchOrderBook(joinProduct(opts.product_id), {limit: opts.limit}).then(result => {
+        console.log('result :', result)
         cb(null, result)
       })
         .catch(function(error) {
