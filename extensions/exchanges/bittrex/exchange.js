@@ -242,21 +242,15 @@ getDepthOrderBook: function (opts, cb) {
     if (!data.success) {
       if (data.message && data.message.match(recoverableErrors)) {
         return retry('getOrderBook', args, data.message)
-      }
-      console.log(data.message)
+      } 
       return cb(null, [])
     }
-    if (typeof data.result.buy[0].Rate === 'undefined') {
-      console.log(data.message)
+    if (typeof data.result.buy[0].Rate === 'undefined') { 
       return cb(null, [])
     }
     cb(null, {
       bids: [ [ data.result.buy[0].Rate, data.result.buy[0].Quantity ] ],
-      asks: [ [ data.result.sell[0].Rate, data.result.sell[0].Quantity ] ]
-     /*  buyOrderRate: data.result.buy[0].Rate,
-      buyOrderAmount: data.result.buy[0].Quantity,
-      sellOrderRate: data.result.sell[0].Rate,
-      sellOrderAmount: data.result.sell[0].Quantity */
+      asks: [ [ data.result.sell[0].Rate, data.result.sell[0].Quantity ] ] 
     })
   })
 },
@@ -286,11 +280,7 @@ getOrderBook: function (opts, cb) {
     }
     cb(null, {
       bids: [ [ data.result.buy[0].Rate, data.result.buy[0].Quantity ] ],
-      asks: [ [ data.result.sell[0].Rate, data.result.sell[0].Quantity ] ]
-      /* buyOrderRate: data.result.buy[0].Rate,
-      buyOrderAmount: data.result.buy[0].Quantity,
-      sellOrderRate: data.result.sell[0].Rate,
-      sellOrderAmount: data.result.sell[0].Quantity */
+      asks: [ [ data.result.sell[0].Rate, data.result.sell[0].Quantity ] ] 
     })
   })
 },
