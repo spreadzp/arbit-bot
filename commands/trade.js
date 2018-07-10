@@ -58,13 +58,13 @@ module.exports = function (program, conf) {
     .option('--debug', 'output detailed debug info')
     .action(function (selector, cmd) {
       var raw_opts = minimist(process.argv)
-      var s = {options: JSON.parse(JSON.stringify(raw_opts))}
+      var s = {options: JSON.parse(JSON.stringify(raw_opts))} 
       var so = s.options
       if (so.run_for) {
         var botStartTime = moment().add(so.run_for, 'm')
       }
       delete so._
-      if (cmd.conf) {
+      if (cmd.conf) { 
         var overrides = require(path.resolve(process.cwd(), cmd.conf))
         Object.keys(overrides).forEach(function (k) {
           so[k] = overrides[k]
@@ -81,7 +81,7 @@ module.exports = function (program, conf) {
       so.min_prev_trades = cmd.min_prev_trades
       so.debug = cmd.debug
       so.stats = !cmd.disable_stats
-      so.mode = so.paper ? 'paper' : 'live'
+      so.mode = so.paper ? 'paper' : 'live' 
       if (so.buy_max_amt) {
         console.log(('--buy_max_amt is deprecated, use --deposit instead!\n').red)
         so.deposit = so.buy_max_amt

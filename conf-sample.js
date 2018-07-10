@@ -141,7 +141,7 @@ c.markdown_buy_pct = 0
 // % to mark up sell price for orders
 c.markup_sell_pct = 0
 // become a market taker (high fees) or a market maker (low fees)
-c.order_type = 'maker'
+c.order_type = 'taker'
 // when supported by the exchange, use post only type orders.
 c.post_only = true
 // use separated fee currency such as binance's BNB.
