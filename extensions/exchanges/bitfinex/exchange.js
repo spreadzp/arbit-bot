@@ -17,7 +17,6 @@ module.exports = function bitfinex (conf) {
   var ws_orders = []
   var ws_trades = []
   var ws_balance = []
-  var ws_orderBook 
   var ws_ticker = []
   var ws_hb = []
   var ws_walletCalcDone
@@ -436,7 +435,7 @@ module.exports = function bitfinex (conf) {
     },
 
     getName: function () {
-      return this.name;
+      return this.name
     },
 
     getTrades: function (opts, cb) {
@@ -537,7 +536,7 @@ module.exports = function bitfinex (conf) {
       cb(null, {
         bids: [ [ ws_ticker.BID, 0 ] ],
         asks: [ [ ws_ticker.ASK, 0 ] ]
-        })
+      })
       //cb(null, { bid : String(ws_ticker.BID), ask : String(ws_ticker.ASK) })
     },
 
@@ -602,7 +601,8 @@ module.exports = function bitfinex (conf) {
         post_only: !!opts.post_only,
         created_at: new Date().getTime(),
         filled_size: 0,
-        ordertype: opts.order_type
+        ordertype: opts.order_type,
+        idOrderAb: opts.idOrderAb
       }
 
       var ws_order = [

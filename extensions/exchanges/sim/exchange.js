@@ -157,6 +157,7 @@ module.exports = function sim (conf, s) {
           orig_time: now,
           time: now,
           created_at: now
+          
         }
         orders['~' + result.id] = order
         openOrders['~' + result.id] = order

@@ -38,3 +38,4 @@ simulations/sim_*.json
 gen.*.bat
 gen.*.sh
 package-lock.json 
+.vscode/

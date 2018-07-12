@@ -9,13 +9,13 @@ module.exports = function container (conf) {
   var public_client, authed_client
 
   function publicClient () {
-    if (!public_client) public_client = new ccxt.hitbtc2({ 'apiKey': '', 'secret': '' })
+    if (!public_client) public_client = new ccxt.hitbtc2({ 'apiKey': conf.hitbtc.key, 'secret': conf.hitbtc.secret })
     return public_client
   }
 
   function authedClient() {
     if (!authed_client) {
-      if (!conf.hitbtc || !conf.hitbtc.key || !conf.hitbtc.key === 'YOUR-API-KEY') {
+      if (!conf.hitbtc || !conf.hitbtc.key || !conf.hitbtc.key === conf.hitbtc.key) {
         throw new Error('please configure your HitBTC credentials in ' + path.resolve(__dirname, 'conf.js'))
       }
       authed_client = new ccxt.hitbtc2({ 'apiKey': conf.hitbtc.key, 'secret': conf.hitbtc.secret })
@@ -43,7 +43,8 @@ module.exports = function container (conf) {
           timeout = 10000
         } 
     setTimeout(function () {
-      exchange[method].apply(exchange, args)
+      //exchange[method].apply(exchange, args)
+      exchange[method](...args)
     }, timeout)
     return false
 
@@ -175,8 +176,8 @@ module.exports = function container (conf) {
       var client = publicClient()
       client.fetchOrderBook(joinProduct(opts.product_id), opts.limit)
         .then(result => {
-          console.log('result :', result);
-          cb(null, result);
+          console.log('result :', result)
+          cb(null, result)
           //cb(null, { bid: result.bid, ask: result.ask })
         })
         .catch(function (error) {
@@ -239,7 +240,9 @@ module.exports = function container (conf) {
 
     sell: function (opts, cb) {
       var func_args = [].slice.call(arguments)
+      console.log('######callParams :', func_args)
       var client = authedClient()
+      console.log('!!!!@@@client :', client)
       if (typeof opts.post_only === 'undefined') {
         opts.post_only = true
       }
@@ -257,9 +260,10 @@ module.exports = function container (conf) {
         quantity: opts.size, 
         price: opts.price 
       }
-      
+      console.log('######callParams :', callParams)
       client.createOrder(callParams.symbol, callParams.type, callParams.side, callParams.quantity, callParams.price)
         .then(result => {
+          console.log('resultHitBtc :', result)
           let order = {
             id: result ? result.id : null,
             status: 'open',
@@ -268,7 +272,8 @@ module.exports = function container (conf) {
             post_only: !!opts.post_only,
             created_at: new Date().getTime(),
             filled_size: '0',
-            ordertype: opts.order_type
+            ordertype: opts.order_type,
+            idOrderAb: opts.idOrderAb
           }
          
        
