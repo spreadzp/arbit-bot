@@ -88,7 +88,7 @@ module.exports = function (program, conf) {
       }
 
       so.selector = objectifySelector(selector || conf.selector)      
-      var engine = engineFactory(s, conf)
+      var engine = engineFactory(s, conf) 
       var collectionServiceInstance = collectionService(conf)
 
       const keyMap = new Map()
@@ -271,6 +271,9 @@ module.exports = function (program, conf) {
       function saveStatsLoop(){
         saveStats()
         setTimeout(function () {
+          /*  engine.getOrderBook((err, cb) => {
+            cb(console.log('object :' ))
+          }) */
           saveStatsLoop()
         }, 10000)
       }
@@ -367,7 +370,7 @@ module.exports = function (program, conf) {
       var session = null
       var sessions = collectionServiceInstance.getSessions()
       var balances = collectionServiceInstance.getBalances()
-      var trades = collectionServiceInstance.getTrades()
+      var trades = collectionServiceInstance.getTrades()  
       var resume_markers = collectionServiceInstance.getResumeMarkers()
       var marker = {
         id: crypto.randomBytes(4).toString('hex'),
@@ -409,7 +412,7 @@ module.exports = function (program, conf) {
           else {
             trade_cursor = s.exchange.getCursor(query_start)
             opts.query.time = {$gte: query_start}
-          }
+          } 
           trades.find(opts.query).limit(opts.limit).sort(opts.sort).toArray(function (err, trades) {
             if (err) throw err
             if (trades.length && so.use_prev_trades) {
@@ -469,8 +472,9 @@ module.exports = function (program, conf) {
                     s.lookback.splice(-1,1)
                   }
 
-                  forwardScan()
+                  forwardScan() 
                   setInterval(forwardScan, so.poll_trades)
+                  setInterval(() => {engine.listenServer} , 1000) 
                   readline.emitKeypressEvents(process.stdin)
                   if (!so.non_interactive && process.stdin.setRawMode) {
                     process.stdin.setRawMode(true)
@@ -623,9 +627,10 @@ module.exports = function (program, conf) {
             })
           })
         }
-        var opts = {product_id: so.selector.product_id, from: trade_cursor}
+        var opts = {product_id: so.selector.product_id, from: 1531752020461}//trade_cursor}  
         s.exchange.getTrades(opts, function (err, trades) {
           if (err) {
+            console.log('err :', err)
             if (err.code === 'ETIMEDOUT' || err.code === 'ENOTFOUND' || err.code === 'ECONNRESET') {
               if (prev_timeout) {
                 console.error('\n' + moment().format('YYYY-MM-DD HH:mm:ss') + ' - getTrades request timed out. retrying...')
@@ -643,8 +648,8 @@ module.exports = function (program, conf) {
               console.error(err)
             }
             return
-          }
-          prev_timeout = null
+          } 
+          prev_timeout = null 
           if (trades.length) {
             trades.sort(function (a, b) {
               if (a.time > b.time) return -1
