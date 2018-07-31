@@ -53,7 +53,8 @@ module.exports = function bittrex(conf) {
     if ((command == 'getQuote' || command == 'getTrades') && data.result == null ) {
       return retry(command, args, data)
     }
-    if (!data.success) {
+    if (!data) {
+      //if (!data.success) {
       if (data.message && data.message.match(recoverableErrors)) {
         return retry(command, args, data.message)
       }
@@ -239,19 +240,21 @@ module.exports = function bittrex(conf) {
           console.log('Bittrex API (getorderbook) had an abnormal response, quitting.')
           return cb(null, [])
         }
-        if (!data.success) {
-          if (data.message && data.message.match(recoverableErrors)) {
-            return retry('getOrderBook', args, data.message)
-          } 
-          return cb(null, [])
-        }
-        if (typeof data.result.buy[0].Rate === 'undefined') { 
-          return cb(null, [])
-        }
-        cb(null, {
-          bids: [ [ data.result.buy[0].Rate, data.result.buy[0].Quantity ] ],
-          asks: [ [ data.result.sell[0].Rate, data.result.sell[0].Quantity ] ] 
-        })
+        if (data) {
+          if (!data.success) {
+            if (data.message && data.message.match(recoverableErrors)) {
+              return retry('getOrderBook', args, data.message)
+            } 
+            return cb(null, [])
+          }
+          if (typeof data.result.buy[0].Rate === 'undefined') { 
+            return cb(null, [])
+          }
+          cb(null, {
+            bids: [ [ data.result.buy[0].Rate, data.result.buy[0].Quantity ] ],
+            asks: [ [ data.result.sell[0].Rate, data.result.sell[0].Quantity ] ] 
+          })
+        } 
       })
     },
 

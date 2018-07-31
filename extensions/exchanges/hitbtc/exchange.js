@@ -176,7 +176,7 @@ module.exports = function container (conf) {
       var client = publicClient()
       client.fetchOrderBook(joinProduct(opts.product_id), opts.limit)
         .then(result => {
-          console.log('result :', result)
+          // console.log('result :', result)
           cb(null, result)
           //cb(null, { bid: result.bid, ask: result.ask })
         })
