@@ -98,7 +98,6 @@ module.exports = function sim(conf, s) {
     },
 
     buy: function(opts, cb) {
-      //setTimeout(function() {
       if (debug) console.log(`buying ${opts.size * opts.price} vs on hold: ${balance.currency} - ${balance.currency_hold} = ${balance.currency - balance.currency_hold}`)
       if (opts.size * opts.price > (balance.currency - balance.currency_hold)) {
         if (debug) console.log('nope')
@@ -111,28 +110,6 @@ module.exports = function sim(conf, s) {
       var result = {
         id: last_order_id++
       }
-
-      /* var order = {
-          id: result.id,
-          status: 'open',
-          price: opts.price,
-          size: opts.size,
-          orig_size: opts.size,
-          remaining_size: opts.size,
-          post_only: !!opts.post_only,
-          filled_size: 0,
-          ordertype: opts.order_type,
-          tradetype: 'buy',
-          orig_time: now,
-          time: now,
-          created_at: now
-        }
-
-        orders['~' + result.id] = order
-        openOrders['~' + result.id] = order
-        recalcHold()
-        cb(null, order) */
-      // }, latency)
       this.checkPriceOrderByOrderBook(opts, function(err, lastOrderBook) {
         if (err) console.log(err)
         console.log('****/*/*/*/*', lastOrderBook)
@@ -140,47 +117,35 @@ module.exports = function sim(conf, s) {
         const ask = lastOrderBook.asks[0][0]
         console.log(bid, opts.price, ask)
         var order = {}
-        if (ask >= opts.price && bid <= opts.price) {
-          const avgprice = (+lastOrderBook.asks[0][0] + +lastOrderBook.bids[0][0]) / 2
-          //orders['~' + result.id].price = avgprice.toFixed(2);
-          order.id = result.id
-          order.status = 'done'
-          order.price = avgprice.toFixed(2)
-          order.size = opts.size
-          order.orig_size = opts.size
-          order.remaining_size = opts.size
-          order.post_only = !!opts.post_only
-          order.filled_size = 0
-          order.ordertype = opts.order_type
-          order.tradetype = 'buy'
-          order.orig_time = now
-          order.time = now
-          order.created_at = now
-          order.done_at = Date.now()
-          order.pair = opts.product_id
-          order.idOrderAb = opts.idOrderAb
-          order.exchange = opts.exchange 
-        } else {
-          order.id = result.id
-          order.status = 'cancelled'
-          order.price = opts.price
-          order.size = opts.size
-          order.orig_size = opts.size
-          order.remaining_size = opts.size
-          order.post_only = !!opts.post_only
-          order.filled_size = 0
-          order.ordertype = opts.order_type
-          order.tradetype = 'sell'
-          order.orig_time = now
-          order.time = now
-          order.created_at = now
-          order.done_at = Date.now()
-          order.pair = opts.product_id
-          order.idOrderAb = opts.idOrderAb
-          order.exchange = opts.exchange
-        }
+        //let tradeSize = (Math.random() * opts.orig_size).toFixed(8) 
+        let tradeSize = opts.orig_size
+        //tradeSize = (tradeSize > opts.size) ? opts.size : tradeSize
+        console.log('++++++BuytradeSize :', tradeSize)
+        const statusBuyOrder = (ask <= opts.price || ask >= opts.price && bid <= opts.price)
+          ? ((opts.remaining_size - tradeSize) > 0) ? 'partial' : 'done' : 'cancelled'
+        const avgprice = (+lastOrderBook.asks[0][0] + +lastOrderBook.bids[0][0]) / 2
+        const tradePrice = ((ask <= opts.price) ? ask : avgprice.toFixed(2))
+
+        console.log('tradeSizeBuy :', tradeSize, opts.remaining_size, opts.orig_size)
+        order.id = result.id
+        order.status = statusBuyOrder
+        order.price = (statusBuyOrder === 'done') ? tradePrice : opts.price
+        order.size = tradeSize
+        order.orig_size = opts.orig_size
+        order.remaining_size = opts.remaining_size - tradeSize
+        order.post_only = !!opts.post_only
+        order.filled_size = 0
+        order.ordertype = opts.order_type
+        order.tradetype = 'buy'
+        order.orig_time = now
+        order.time = now
+        order.created_at = now
+        order.done_at = Date.now()
+        order.pair = opts.product_id
+        order.idOrderAb = opts.idOrderAb
+        order.exchange = opts.exchange
         orders['~' + result.id] = order
-        //openOrders['~' + result.id] = order
+        //openOrders['~' + result.id] = order 
         recalcHold()
         cb(null, order)
       })
@@ -201,51 +166,39 @@ module.exports = function sim(conf, s) {
         id: last_order_id++
       }
       this.checkPriceOrderByOrderBook(opts, function(err, lastOrderBook) {
-        if (err) console.log(err) 
+        if (err) console.log(err)
         const bid = lastOrderBook.bids[0][0]
-        const ask = lastOrderBook.asks[0][0] 
+        const ask = lastOrderBook.asks[0][0]
         var order = {}
-        if (ask >= opts.price && bid <= opts.price) {
-          const avgprice = (+lastOrderBook.asks[0][0] + +lastOrderBook.bids[0][0]) / 2 
-          order.id = result.id
-          order.status = 'done'
-          order.price = avgprice.toFixed(2)
-          order.size = opts.size
-          order.orig_size = opts.size
-          order.remaining_size = opts.size
-          order.post_only = !!opts.post_only
-          order.filled_size = 0
-          order.ordertype = opts.order_type
-          order.tradetype = 'sell'
-          order.orig_time = now
-          order.time = now
-          order.created_at = now
-          order.done_at = Date.now()
-          order.pair = opts.product_id
-          order.idOrderAb = opts.idOrderAb
-          order.exchange = opts.exchange
-
-        } else {
-          order.id = result.id
-          order.status = 'cancelled'
-          order.price = opts.price
-          order.size = opts.size
-          order.orig_size = opts.size
-          order.remaining_size = opts.size
-          order.post_only = !!opts.post_only
-          order.filled_size = 0
-          order.ordertype = opts.order_type
-          order.tradetype = 'sell'
-          order.orig_time = now
-          order.time = now
-          order.created_at = now
-          order.done_at = Date.now()
-          order.pair = opts.product_id
-          order.idOrderAb = opts.idOrderAb
-          order.exchange = opts.exchange
-        }
+        //let tradeSize = (Math.random() * opts.orig_size).toFixed(8) 
+        let tradeSize = opts.orig_size 
+        //tradeSize = (tradeSize > +opts.size) ? +opts.size : tradeSize
+        console.log('++++++SelltradeSize :', tradeSize)
+        const statusSellOrder = (bid >= opts.price || ask >= opts.price && bid <= opts.price) ?
+          ((opts.remaining_size - tradeSize) > 0) ? 'partial' : 'done' : 'cancelled'
+        const avgPrice = (+lastOrderBook.asks[0][0] + +lastOrderBook.bids[0][0]) / 2
+        const tradePrice = ((ask <= opts.price) ? ask : avgPrice.toFixed(2))
+        console.log('tradeSizeSell :', tradeSize, opts.remaining_size, opts.orig_size)
+        order.id = result.id
+        order.status = statusSellOrder
+        order.price = (statusSellOrder === 'done') ? tradePrice : opts.price
+        order.size = tradeSize
+        order.orig_size = opts.orig_size
+        order.remaining_size = opts.remaining_size - tradeSize
+        order.post_only = !!opts.post_only
+        order.filled_size = 0
+        order.ordertype = opts.order_type
+        order.tradetype = 'sell'
+        order.orig_time = now
+        order.time = now
+        order.created_at = now
+        order.done_at = Date.now()
+        order.pair = opts.product_id
+        order.idOrderAb = opts.idOrderAb
+        order.exchange = opts.exchange
         orders['~' + result.id] = order
         //openOrders['~' + result.id] = order
+        console.log('@@@@order sell:', order)
         recalcHold()
         cb(null, order)
       })
