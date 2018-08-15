@@ -39,3 +39,4 @@ gen.*.bat
 gen.*.sh
 package-lock.json 
 .vscode/
+nohup.out
