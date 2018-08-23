@@ -118,7 +118,7 @@ module.exports = function sim(conf, s) {
         console.log(bid, opts.price, ask)
         var order = {}
         //let tradeSize = (Math.random() * opts.orig_size).toFixed(8) 
-        let tradeSize = opts.orig_size
+        let tradeSize = opts.size
         //tradeSize = (tradeSize > opts.size) ? opts.size : tradeSize
         console.log('++++++BuytradeSize :', tradeSize)
         const statusBuyOrder = (ask <= opts.price || ask >= opts.price && bid <= opts.price)
@@ -170,15 +170,15 @@ module.exports = function sim(conf, s) {
         const bid = lastOrderBook.bids[0][0]
         const ask = lastOrderBook.asks[0][0]
         var order = {}
-        //let tradeSize = (Math.random() * opts.orig_size).toFixed(8) 
-        let tradeSize = opts.orig_size 
-        //tradeSize = (tradeSize > +opts.size) ? +opts.size : tradeSize
-        console.log('++++++SelltradeSize :', tradeSize)
+        let tradeSize = (Math.random() * opts.orig_size).toFixed(8) 
+        //let tradeSize = opts.size 
+        tradeSize = (tradeSize > +opts.size) ? +opts.size : tradeSize
+        console.log('++++++SelltradeSize :', tradeSize, opts.size)
         const statusSellOrder = (bid >= opts.price || ask >= opts.price && bid <= opts.price) ?
           ((opts.remaining_size - tradeSize) > 0) ? 'partial' : 'done' : 'cancelled'
         const avgPrice = (+lastOrderBook.asks[0][0] + +lastOrderBook.bids[0][0]) / 2
         const tradePrice = ((ask <= opts.price) ? ask : avgPrice.toFixed(2))
-        console.log('tradeSizeSell :', tradeSize, opts.remaining_size, opts.orig_size)
+        console.log('tradeSizeSell :tradeSize, opts.remaining_size, opts.orig_size, opts.size+', tradeSize, opts.remaining_size, opts.orig_size, opts.size)
         order.id = result.id
         order.status = statusSellOrder
         order.price = (statusSellOrder === 'done') ? tradePrice : opts.price
