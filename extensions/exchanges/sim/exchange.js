@@ -98,6 +98,7 @@ module.exports = function sim(conf, s) {
     },
 
     buy: function(opts, cb) {
+      console.log('////////opts :', opts)
       if (debug) console.log(`buying ${opts.size * opts.price} vs on hold: ${balance.currency} - ${balance.currency_hold} = ${balance.currency - balance.currency_hold}`)
       if (opts.size * opts.price > (balance.currency - balance.currency_hold)) {
         if (debug) console.log('nope')
@@ -152,7 +153,7 @@ module.exports = function sim(conf, s) {
     },
 
     sell: function(opts, cb) {
-      // setTimeout(function() {
+      console.log('////////opts :', opts)
       if (debug) console.log(`selling ${opts.size} vs on hold: ${balance.asset} - ${balance.asset_hold} = ${balance.asset - balance.asset_hold}`)
       if (opts.size > (balance.asset - balance.asset_hold)) {
         if (debug) console.log('nope')
